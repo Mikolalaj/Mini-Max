@@ -1,5 +1,5 @@
 import unittest
-from two_player_games.games.dots_and_boxes import DotsAndBoxes, DotsAndBoxesMove
+from dots_and_boxes import DotsAndBoxes, DotsAndBoxesMove
 
 
 class TestDotsAndBoxes(unittest.TestCase):
@@ -121,3 +121,7 @@ class TestDotsAndBoxes(unittest.TestCase):
 
         self.assertTrue(game.is_finished())
         self.assertIsNone(game.get_winner())
+
+
+if __name__ == '__main__':
+    unittest.main()

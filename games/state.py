@@ -1,7 +1,7 @@
 from typing import Iterable, Optional
 
-from two_player_games.move import Move
-from two_player_games.player import Player
+from games.move import Move
+from games.player import Player
 
 
 class State:
