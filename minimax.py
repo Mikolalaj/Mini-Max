@@ -1,48 +1,13 @@
 
 from copy import deepcopy
-from games.dots_and_boxes import DotsAndBoxes, DotsAndBoxesMove
-
-def minimax(position, depth, maximizingPlayer, alpha=-float('inf'), beta=float('inf')):
-    if depth == 0:
-        return position.get_value()
-
-    if maximizingPlayer:
-        value = -float('inf')
-        for move in position.get_moves():
-            value = max(value, minimax(move, depth - 1, alpha, beta, False))
-            alpha = max(alpha, value)
-            if beta <= alpha:
-                break
-        return value
-
-    if not maximizingPlayer:
-        value = float('inf')
-        for move in position.get_moves():
-            value = min(value, minimax(move, depth - 1, alpha, beta, True))
-            beta = min(beta, value)
-            if beta <= alpha:
-                break
-        return value
+from games.dots_and_boxes import DotsAndBoxes
 
 
-class Position:
-    def __init__(self, game) -> None:
+class GameTree:
+    def __init__(self, game: DotsAndBoxes) -> None:
         self.game = game
-        self.value = None
-        self.childs = []
-        self.depth = 0
-        self.add_childs()
-        
-    def add_childs(self):
-        if self.game.is_finished() == False:
-            for move in self.game.get_moves():
-                game_copy = deepcopy(self.game)
-                game_copy.make_move(move)
-                self.childs.append(Position(game_copy))
-                if self.childs[-1].depth + 1 > self.depth:
-                    self.depth = self.childs[-1].depth + 1
-        else:
-            self.depth = 0
+        self.moves = self.game.get_moves()
+        if self.moves == []:
             winner = self.game.get_winner()
             if winner == None:
                 self.value = 0
@@ -50,29 +15,45 @@ class Position:
                 self.value = 1
             elif winner.char == '2':
                 self.value = -1
+        else:
+            self.value = None
     
     def get_value(self):
         return self.value
 
-    def get_moves(self):
-        return self.childs
+    def get_next_child(self):
+        if len(self.moves) == 0:
+            return None
+        else:
+            game_copy = deepcopy(self.game)
+            next_move = self.moves.pop(0)
+            game_copy.make_move(next_move)
+            return GameTree(game_copy)
 
-game = DotsAndBoxes(2)
-game.make_move(DotsAndBoxesMove('v', (0, 0)))
-game.make_move(DotsAndBoxesMove('v', (1, 2)))
-game.make_move(DotsAndBoxesMove('v', (1, 0)))
-game.make_move(DotsAndBoxesMove('v', (0, 2)))
 
-print(game, '\n')
+def minimax(game_tree: GameTree, maximizingPlayer: bool, alpha=-float('inf'), beta=float('inf')):
+    value = game_tree.get_value()
+    if value is not None:
+        return value
 
-positions = Position(game)
+    if maximizingPlayer:
+        value = -float('inf')
+        while len(game_tree.moves) != 0:
+            position_child = game_tree.get_next_child()
+            value = max(value, minimax(position_child, alpha, beta, False))
+            alpha = max(alpha, value)
+            if beta <= alpha:
+                break
+        return value
 
-starting_player = True if positions.game.get_current_player().char == '1' else False
-result = minimax(positions, positions.depth, starting_player)
-print(result)
-if result == 1:
-    print('Player 1 wins')
-elif result == -1:
-    print('Player 2 wins')
-else:
-    print('It\'s a draw!')
+    if not maximizingPlayer:
+        value = float('inf')
+        while len(game_tree.moves) != 0:
+            position_child = game_tree.get_next_child()
+            value = min(value, minimax(position_child, alpha, beta, True))
+            beta = min(beta, value)
+            if beta <= alpha:
+                break
+        return value
+
+
