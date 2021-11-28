@@ -17,8 +17,11 @@ print('Starting Board\n')
 print(game, '\n')
 
 game_tree = GameTree(game)
+print(game_tree.get_size())
 
 result = minimax(game_tree, True if game_tree.game.get_current_player().char == '1' else False)
+
+print(game_tree.get_size())
 
 if result == 1:
     print('Player 1 wins')

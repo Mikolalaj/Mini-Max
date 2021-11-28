@@ -7,6 +7,7 @@ class GameTree:
     def __init__(self, game: DotsAndBoxes) -> None:
         self.game = game
         self.moves = self.game.get_moves()
+        self.childs = []
         if self.moves == []:
             winner = self.game.get_winner()
             if winner == None:
@@ -28,14 +29,22 @@ class GameTree:
             game_copy = deepcopy(self.game)
             next_move = self.moves.pop(0)
             game_copy.make_move(next_move)
-            return GameTree(game_copy)
+            new_game_tree = GameTree(game_copy)
+            self.childs.append(new_game_tree)
+            return new_game_tree
+        
+    def get_size(self):
+        size = len(self.childs)
+        for child in self.childs:
+            size += child.get_size()
+        return size
 
 
 def minimax(game_tree: GameTree, maximizingPlayer: bool, alpha=-float('inf'), beta=float('inf')):
     value = game_tree.get_value()
     if value is not None:
         return value
-
+    
     if maximizingPlayer:
         value = -float('inf')
         while len(game_tree.moves) != 0:
@@ -55,5 +64,3 @@ def minimax(game_tree: GameTree, maximizingPlayer: bool, alpha=-float('inf'), be
             if beta <= alpha:
                 break
         return value
-
-

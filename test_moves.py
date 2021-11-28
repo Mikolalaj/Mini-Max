@@ -8,9 +8,6 @@ from games.dots_and_boxes import DotsAndBoxes
 
 
 def code(game):
-    print('Starting Board')
-    print(game)
-
     game_tree = GameTree(game)
 
     result = minimax(game_tree, True if game_tree.game.get_current_player().char == '1' else False)
