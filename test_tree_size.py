@@ -1,7 +1,5 @@
 
 import random
-import numpy as np
-from copy import deepcopy
 import matplotlib.pyplot as plt
 from minimax import minimax, GameTree
 from games.dots_and_boxes import DotsAndBoxes
