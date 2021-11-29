@@ -46,21 +46,25 @@ def minimax(game_tree: GameTree, maximizingPlayer: bool, alpha=-float('inf'), be
         return value
     
     if maximizingPlayer:
-        value = -float('inf')
+        best_value = -float('inf')
         while len(game_tree.moves) != 0:
-            position_child = game_tree.get_next_child()
-            value = max(value, minimax(position_child, alpha, beta, False))
-            alpha = max(alpha, value)
+            child = game_tree.get_next_child()
+            next_player = True if child.game.get_current_player().char == '1' else False
+            best_value = max(best_value, minimax(child, next_player, alpha, beta))
+            alpha = max(alpha, best_value)
+            child.value = best_value
             if beta <= alpha:
                 break
-        return value
+        return best_value
 
     if not maximizingPlayer:
-        value = float('inf')
+        best_value = float('inf')
         while len(game_tree.moves) != 0:
-            position_child = game_tree.get_next_child()
-            value = min(value, minimax(position_child, alpha, beta, True))
-            beta = min(beta, value)
+            child = game_tree.get_next_child()
+            next_player = True if child.game.get_current_player().char == '1' else False
+            best_value = min(best_value, minimax(child, next_player, alpha, beta))
+            beta = min(beta, best_value)
+            child.value = best_value
             if beta <= alpha:
                 break
-        return value
+        return best_value
