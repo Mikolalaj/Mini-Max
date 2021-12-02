@@ -18,7 +18,7 @@ class GameTree:
                 self.value = -1
         else:
             self.value = None
-    
+
     def get_value(self):
         return self.value
 
@@ -32,25 +32,23 @@ class GameTree:
             new_game_tree = GameTree(game_copy)
             self.childs.append(new_game_tree)
             return new_game_tree
-        
-    def get_size(self):
-        size = len(self.childs)
-        for child in self.childs:
-            size += child.get_size()
-        return size
+    
+    def get_current_player(self) -> bool:
+        return True if self.game.get_current_player().char == '1' else False
 
 
 def minimax(game_tree: GameTree, maximizingPlayer: bool, alpha=-float('inf'), beta=float('inf')):
     value = game_tree.get_value()
     if value is not None:
         return value
-    
+
     if maximizingPlayer:
         best_value = -float('inf')
         while len(game_tree.moves) != 0:
             child = game_tree.get_next_child()
-            next_player = True if child.game.get_current_player().char == '1' else False
-            best_value = max(best_value, minimax(child, next_player, alpha, beta))
+            next_player = child.get_current_player()
+            best_value = max(best_value, minimax(
+                child, next_player, alpha, beta))
             alpha = max(alpha, best_value)
             child.value = best_value
             if beta <= alpha:
@@ -61,8 +59,9 @@ def minimax(game_tree: GameTree, maximizingPlayer: bool, alpha=-float('inf'), be
         best_value = float('inf')
         while len(game_tree.moves) != 0:
             child = game_tree.get_next_child()
-            next_player = True if child.game.get_current_player().char == '1' else False
-            best_value = min(best_value, minimax(child, next_player, alpha, beta))
+            next_player = child.get_current_player()
+            best_value = min(best_value, minimax(
+                child, next_player, alpha, beta))
             beta = min(beta, best_value)
             child.value = best_value
             if beta <= alpha:
